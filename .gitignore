@@ -1,3 +1,9 @@
+# Ignore unformatted_data directory with xlsx and csv
+.xlsx
+.csv
+unformatted_data/
+data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
