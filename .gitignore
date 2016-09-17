@@ -4,6 +4,7 @@
 .pyc
 unformatted_data/
 data/
+images/psudocode_DecisionTree.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
