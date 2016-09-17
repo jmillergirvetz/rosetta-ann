@@ -1,6 +1,7 @@
 # Ignore unformatted_data directory with xlsx and csv
 .xlsx
 .csv
+.pyc
 unformatted_data/
 data/
 
