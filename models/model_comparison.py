@@ -1,4 +1,4 @@
-### MODULE 1 - data clean and model comparison
+### MODULE 1 - data clean and model comparison ###
 
 # Imports data structures
 import pandas as pd
@@ -53,8 +53,8 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 
 	"""
 	PARAMETERS
+
 	pickle_model: when set to a pathway inclduing file name, will save a pickled model
-	
 	"""
 	try:	
 		# Checks if linear regression model
@@ -63,7 +63,7 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			# Fits model
 			model.fit(X_train, y_train)
 
-			# Prints the results
+			# Prints the results and 
 			print model.__class__.__name__, 'Accuracy Is'
 			print model.score(X_test, y_test)
 			print 
@@ -71,8 +71,7 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			print model.intercept_
 			print
 			print "Coefficients"
-			print np.array(zip(df_columns, \
-							   np.insert(model.coef_, 0, model.intercept_).tolist()))
+			print np.array(zip(df_columns, model.coef_))
 			print
 		else: 
 			# Fits model 
