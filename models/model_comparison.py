@@ -71,7 +71,8 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			print model.intercept_
 			print
 			print "Coefficients"
-			print np.array(zip(df_columns, model.coef_.insert(0, model.intercept_)))
+			print np.array(zip(df_columns, \
+							   np.insert(model.coef_, 0, model.intercept_).tolist()))
 			print
 		else: 
 			# Fits model 
