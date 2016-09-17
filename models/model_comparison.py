@@ -44,7 +44,7 @@ def split_data(df):
 	X = df
 
 	# Creates train and test cross-validation sets
-	X_train, X_test, y_train, y_test = train_test_split(X, y)
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 	return X_train, X_test, y_train, y_test
 
 def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
@@ -87,7 +87,7 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 	 	
 	 	# pickles model if param is set to pathway
 		if pickle_model != None:
-			with open(pickle_file, 'wb') as f:
+			with open(pickle_model, 'wb') as f:
 				pickle.dump(data, f)
 
 	except DeprecationWarning:
@@ -98,19 +98,26 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 
 
 if __name__ == '__main__':
-	
+
+	# Creates cleaned and randomized dataframe	
 	df = import_clean_csv('../data/rosetta-ann_pyformat.csv')
 
+	# Creates a column list to map coefficients and feature importances
 	df_columns = df.columns
 
+	# Prints numer of features
+	print 'Number of features: ', len(df_columns) - 1
+
+	# Creates cross-validation sets
 	X_train, X_test, y_train, y_test = split_data(df)
 
+	# Instantiates models
 	lr = LinearRegression()
-	rf = RandomForestRegressor(n_estimators=20)
+	rf = RandomForestRegressor(n_estimators=10)
 	gbr = GradientBoostingRegressor()
 
 	# Fits, scores and prints feature importances
-	# NOTE: add a pathway to the pickle_model parameter to create a pickled model file
+	# NOTE: add a pathway to the pickle_model parameter to create a pickled model
 	model_select(lr, X_train, X_test, y_train, y_test, pickle_model=None)  
 	model_select(rf, X_train, X_test, y_train, y_test, pickle_model=None)
 	model_select(gbr, X_train, X_test, y_train, y_test, pickle_model=None)
