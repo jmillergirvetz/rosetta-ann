@@ -5,6 +5,8 @@
 unformatted_data/
 data/
 images/psudocode_DecisionTree.png
+.ipynb_checkpoints/
+.ipynb_checkpoints
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
