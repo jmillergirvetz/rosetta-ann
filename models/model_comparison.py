@@ -4,10 +4,16 @@
 import pandas as pd
 import numpy as np
 
+# Imports train and test splits for cross-validation
+from sklearn.cross_validation import train_test_split
+
 # Imports statistical models
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
+
+# Imports pickle module for data storage files
+import cPickle as pickle
 
 # Imports warnings module
 import warnings
@@ -37,9 +43,7 @@ def split_data(df):
 	y = df.pop('(cmd-1)_Ks')
 	X = df
 
-	# imports and splits data into cross-validation sets
-	from sklearn.cross_validation import train_test_split
-
+	# Creates train and test cross-validation sets
 	X_train, X_test, y_train, y_test = train_test_split(X, y)
 	return X_train, X_test, y_train, y_test
 
@@ -53,12 +57,12 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 	
 	"""
 	try:	
-		# Fits and transforms model
+		# Checks if linear regression model
 		if model.__class__.__name__ == LinearRegression().__class__.__name__:
+
 			# Fits model
 			model.fit(X_train, y_train)
 
-			# 
 			# Prints the results
 			print model.__class__.__name__, 'Accuracy Is'
 			print model.score(X_test, y_test)
@@ -67,10 +71,10 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			print model.intercept_
 			print
 			print "Coefficients"
-			print model.coef_
+			print np.array(zip(df_columns, model.coef_.insert(0, model.intercept_)))
 			print
 		else: 
-			# Fits model and transforms data
+			# Fits model 
 			model.fit(X_train, y_train)
 
 			# Prints the results
@@ -78,7 +82,7 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			print model.score(X_test, y_test)
 			print 
 			print "Feature Importances"
-			print model.feature_importances_
+			print np.array(zip(df_columns, model.feature_importances_))
 			print
 	 	
 	 	# pickles model if param is set to pathway
@@ -89,15 +93,20 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 	except DeprecationWarning:
 		import ipdb; ipdb.set_trace()
 
+	except RuntimeWarning:
+		import ipdb; ipdb.set_trace()
+
 
 if __name__ == '__main__':
 	
 	df = import_clean_csv('../data/rosetta-ann_pyformat.csv')
 
+	df_columns = df.columns
+
 	X_train, X_test, y_train, y_test = split_data(df)
 
-	lr = LinearRegression(n_jobs=5)
-	rf = RandomForestRegressor(n_estimators=50)
+	lr = LinearRegression()
+	rf = RandomForestRegressor(n_estimators=20)
 	gbr = GradientBoostingRegressor()
 
 	# Fits, scores and prints feature importances
