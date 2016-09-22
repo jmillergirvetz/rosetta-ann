@@ -104,7 +104,7 @@ def model_select(model, X_train, X_test, y_train, y_test, param_grid=None, pickl
 			print clf.score(X_test, y_test)
 			print  
 			print "Grid Searched Parameters"
-			print clf.best_params_
+			print convert_dict_2_arr(clf.best_params_)
 			print
 
 			# Calculates mean squared error and root mean squared error with predictions
@@ -127,20 +127,12 @@ def model_select(model, X_train, X_test, y_train, y_test, param_grid=None, pickl
 	except RuntimeWarning:
 		import ipdb; ipdb.set_trace()
 
-def get_best_params(get_params, get_gs_features):
-	"""Input the parameter dictionary and grid searched features"""
-	"""Output numpy ndarray of parameter dictionary keys and grid searched features"""
-	# Creates keys for output array
-	key = np.array([d.keys()])
-	pass
-
-
-# def convert_dict_2_arr(d):
-# 	"""Input dictionary with keys as strings and values as lists"""
-# 	"""Output numpy ndarray displaying grid searched parameters"""
-# 	arr1 = np.array([d.keys()])
-# 	arr2 = np.array(d.values)
-# 	return np.concatenate((arr1.T, arr2), axis=1)
+def convert_dict_2_arr(d):
+	"""Input dictionary with keys as strings and values as lists"""
+	"""Output numpy ndarray displaying grid searched parameters"""
+	arr1 = np.array([d.keys()])
+	arr2 = np.array([d.values()])
+	return np.concatenate((arr1.T, arr2.T), axis=1)
 
 
 if __name__ == '__main__':
