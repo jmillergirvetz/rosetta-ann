@@ -4,6 +4,9 @@
 import pandas as pd
 import numpy as np
 
+# Imports scoring metrics
+from sklearn.metrics import mean_squared_error
+
 # Imports train and test splits for cross-validation
 from sklearn.cross_validation import train_test_split
 
@@ -11,6 +14,9 @@ from sklearn.cross_validation import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
+
+# Imports grid search used to determine optimal paramters
+from sklearn.grid_search import GridSearchCV
 
 # Imports pickle module for data storage files
 import cPickle as pickle
@@ -47,14 +53,17 @@ def split_data(df):
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 	return X_train, X_test, y_train, y_test
 
-def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
+def model_select(model, X_train, X_test, y_train, y_test, param_grid=None, pickle_model=None):
 	"""Input model and model parameters"""
 	"""Output fitted and scored model"""
 
 	"""
 	PARAMETERS
 
-	pickle_model: when set to a pathway inclduing file name, will save a pickled model
+	pickle_model: when set to a pathway inclduing filename, will save a pickled model
+
+	param_grid: when set to a parameter grid, returns a grid searched model with \
+	optimal parameters
 	"""
 	try:	
 		# Checks if linear regression model
@@ -64,7 +73,7 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			model.fit(X_train, y_train)
 
 			# Prints the results and 
-			print model.__class__.__name__, 'Accuracy Is'
+			print model.__class__.__name__, 'R^2 Is'
 			print model.score(X_test, y_test)
 			print 
 			print "Intercept"
@@ -73,16 +82,38 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 			print "Coefficients"
 			print np.array(zip(df_columns, model.coef_))
 			print
+
+			# Calculates mean squared error and root mean squared error with predictions
+			print "MSE Score"
+			mse_score = mean_squared_error(y_test, model.predict(X_test))
+			print mse_score
+			print
+			print "RMSE Score"
+			print mse_score**0.5
+			print
 		else: 
+
+			# Instantiates model with grid_search
+			clf = GridSearchCV(model, param_grid=param_grid, cv=5)
+
 			# Fits model 
-			model.fit(X_train, y_train)
+			clf.fit(X_train, y_train)
 
 			# Prints the results
-			print model.__class__.__name__, 'Accuracy Is'
-			print model.score(X_test, y_test)
+			print model.__class__.__name__, "R^2 Is"
+			print clf.score(X_test, y_test)
+			print  
+			print "Grid Searched Parameters"
+			print clf.best_params_
+			print
+
+			# Calculates mean squared error and root mean squared error with predictions
+			print "MSE Score"
+			mse_score = mean_squared_error(y_test, clf.predict(X_test))
+			print mse_score
 			print 
-			print "Feature Importances"
-			print np.array(zip(df_columns, model.feature_importances_))
+			print "RMSE Score"
+			print mse_score**0.5
 			print
 	 	
 	 	# pickles model if param is set to pathway
@@ -95,6 +126,21 @@ def model_select(model, X_train, X_test, y_train, y_test, pickle_model=None):
 
 	except RuntimeWarning:
 		import ipdb; ipdb.set_trace()
+
+def get_best_params(get_params, get_gs_features):
+	"""Input the parameter dictionary and grid searched features"""
+	"""Output numpy ndarray of parameter dictionary keys and grid searched features"""
+	# Creates keys for output array
+	key = np.array([d.keys()])
+	pass
+
+
+# def convert_dict_2_arr(d):
+# 	"""Input dictionary with keys as strings and values as lists"""
+# 	"""Output numpy ndarray displaying grid searched parameters"""
+# 	arr1 = np.array([d.keys()])
+# 	arr2 = np.array(d.values)
+# 	return np.concatenate((arr1.T, arr2), axis=1)
 
 
 if __name__ == '__main__':
@@ -113,12 +159,23 @@ if __name__ == '__main__':
 
 	# Instantiates models
 	lr = LinearRegression()
-	rf = RandomForestRegressor(n_estimators=10)
+	rf = RandomForestRegressor()
 	gbr = GradientBoostingRegressor()
+
+	# Creates parameter grids for lr, rf, gbr
+	rf_parameters = {"n_estimators": [1, 2, 3], 
+				  "max_depth": [1, 2, 5],
+                  "max_features": [1, 2, 5],
+                  "min_samples_split": [1, 3, 5],
+                  "min_samples_leaf": [1, 3, 5],
+                  "bootstrap": [True, False]}
+
+	gbr_parameters = {}
 
 	# Fits, scores and prints feature importances
 	# NOTE: add a pathway to the pickle_model parameter to create a pickled model
 	model_select(lr, X_train, X_test, y_train, y_test, pickle_model=None)  
-	model_select(rf, X_train, X_test, y_train, y_test, pickle_model=None)
-	model_select(gbr, X_train, X_test, y_train, y_test, pickle_model=None)
+	model_select(rf, X_train, X_test, y_train, y_test, param_grid=rf_parameters, \
+				 pickle_model=None)
+	#model_select(gbr, X_train, X_test, y_train, y_test, pickle_model=None)
 
